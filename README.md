@@ -13,6 +13,17 @@ git clone git@github.com:sean-michael/skills.git ~/skills
 
 It's fully idempotent so re-running will add missins skills and not overwrite anything that I already have.
 
+For example:
+
+```bash
+$ ./install.sh 
+  up to date  grafana-dashboards
+  linked      python-docs
+  up to date  ui-ux
+```
+
+The symlinks ensure that the skills are always up to date with whatever the local git dir has.
+
 ## What's included
 
 I've included skills for specific use cases borne from my experience developing platform infrastructure and DevOps automation tools.
