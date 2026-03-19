@@ -33,3 +33,11 @@ That's pretty much it. The LLM friend needs to be told that it should in fact va
 In a similar vein as the grafana dashboards I often struggle to articulate the first time what a 'good' design or intuitive ui-ux experience looks like to an LLM agent. I definitely know what doesn't look good and after reading some blogs and design articles and whatnot I started to put together some key facets that could be transcribed in a skill.
 
 These are pretty basic right now like, every user interaction should have a response, use color theory and give icons and colors semantic meaning, green is good, yellow is warning, red is error, etc.
+
+### [python-docs](./python-docs/SKILL.md)
+
+Sometimes I'll ask claude to write documentation for a codebase but this requires frequent updates as new features are added at the speed of whatever token rate anthropic is willing to give me.. so I figured we should probably act like adults and use `mkdocstrings` to make the code the source of truth.
+
+The philosophy behind this skill is I don't want to bog-down the context of normal coding operations with a full trigger of the skill, instead I'll give some existing code and ask claude to create the docstrings. This way future claude sessions or agents will pickup on the patterns of docstrings in the context and intuitively continue it.
+
+I also added some specifics on deploying with github pages using github actions. This is well documented online so I didn't feel the need to explicitly call out the implementation steps there.
