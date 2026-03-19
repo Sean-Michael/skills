@@ -11,7 +11,7 @@ git clone git@github.com:sean-michael/skills.git ~/skills
 ~/skills/install.sh
 ```
 
-It's fully idempotent so re-running will add missins skills and not overwrite anything that I already have.
+It's fully idempotent so re-running will add missing skills and not overwrite anything that I already have.
 
 For example:
 
