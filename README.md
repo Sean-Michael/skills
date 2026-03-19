@@ -15,3 +15,9 @@ The main goals are:
 - never commit dashboards with broken queries
 
 That's pretty much it. The LLM friend needs to be told that it should in fact validate that the queries it writes are actually possible to gather.
+
+### [ui-ux](./ui-ux/SKILL.md)
+
+In a similar vein as the grafana dashboards I often struggle to articulate the first time what a 'good' design or intuitive ui-ux experience looks like to an LLM agent. I definitely know what doesn't look good and after reading some blogs and design articles and whatnot I started to put together some key facets that could be transcribed in a skill.
+
+These are pretty basic right now like, every user interaction should have a response, use color theory and give icons and colors semantic meaning, green is good, yellow is warning, red is error, etc.
