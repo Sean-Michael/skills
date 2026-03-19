@@ -11,6 +11,7 @@ I've included skills for specific use cases borne from my experience developing 
 Everyone wants them but nobody wants to make them! Some people do, I don't really because I lack creativity in this visual sense. I know what's definitely *not* good though and I've attempted to distill some best practices of design and operational function here. 
 
 The main goals are:
+
 - provide a 5-second glance status check for an application
 - never commit dashboards with broken queries
 
