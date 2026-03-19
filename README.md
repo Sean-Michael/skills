@@ -2,6 +2,17 @@
 
 These are my mad programming skills for my llm friend named claude.
 
+## Installation
+
+I use this script to create symlinks to my home `.claude/skills` so I can access these system-wide.
+
+```bash
+git clone git@github.com:sean-michael/skills.git ~/skills
+~/skills/install.sh
+```
+
+It's fully idempotent so re-running will add missins skills and not overwrite anything that I already have.
+
 ## What's included
 
 I've included skills for specific use cases borne from my experience developing platform infrastructure and DevOps automation tools.
