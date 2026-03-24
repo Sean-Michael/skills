@@ -34,9 +34,24 @@ These are the things that get skipped without explicit instruction:
 - Expiry ≤ 1 hour. Single-use: invalidated on first use.
 - Stored hashed. Endpoint returns identical response whether email exists or not.
 
+**Secrets**
+- No API keys, tokens, or credentials hardcoded in source — use environment
+  variables or a secrets manager.
+- Nothing sensitive in client-side bundles or public config files.
+
+**Dangerous functions**
+- Never use `eval` or equivalent (`exec`, `Function()`) on user input — use a
+  safe parser or explicit allowlist. The shortest path here is arbitrary code
+  execution.
+
 **Observability**
 - Structured JSON logging with request ID, user ID, timestamp on every error.
 - Request ID propagated through middleware → logs → error responses.
 - `/health` endpoint.
 - No secrets, tokens, or PII in logs.
 
+## On Long Sessions
+
+Security degrades across revision cycles — each follow-up prompt that adds
+features or refactors code can quietly introduce new gaps. After any significant
+refactor, re-check the non-obvious defaults above before wrapping up.
