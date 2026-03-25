@@ -61,3 +61,13 @@ Claude already has a lot of training data on this topic but I feel that sometime
 
 So my hope is just by simply invoking this skill and these topics getting placed in the context, all of this will surface and better the app output.
 
+### [obsidian](./obsidian/SKILL.md)
+
+I really like Obisidian as a note taking and personal knowledge organization tool, but I am HORRIBLE at keeping it organized. I start off with good intentions and then slowly it gets derailed.. 
+
+So with this skill the goal is two-fold:
+
+1. Enable claude to use the newly released (at time of writing) Obsidian CLI, I figure just using the `obsidian help` command will be the best way to keep it updated with any changes and it should understand the commands it has access to, their outputs, flags, etc. 
+
+2. Codify my 'ideal' Obsidian practices. I like having a running tally of what I work on, with a combination of Daily Notes with a template which I find very useful for tracking 'to-dos' and other random things, blockers, status, notes for the next day, and then other meeting notes or project related things; gotchas, trade-offs I made, things I meant to remember to change later but forgot.. stuff like that. Self documentation before it's ready to be put up in Confluence etc.
+
