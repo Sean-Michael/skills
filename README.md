@@ -86,3 +86,22 @@ There are three modes:
 - **AUDIT LOOP** — spawns an auditor agent that reads your spec and scores the codebase against it across dimensions like auth, API completeness, test coverage, and production polish. Findings get converted into tasks, an executor implements them, and the loop repeats until the score hits your threshold or something gets too risky and requires a human in the loop.
 
 The risk model allows tasks to be tagged `safe`, `review`, or `risky`, and risky tasks are hard-blocked by default. This operates under the assumption that there's a git repository backing the codebase for tracing and reverts. Anything touching live infrastructure — applying to a cluster, executing terraform — gets flagged as risky and won't run unless you specifically tell it to.
+
+**Usage:**
+
+```bash
+# Night before — plan your work interactively
+claude
+> Night shift planning: add rate limiting to all auth endpoints, 
+  write missing tests for the workflow service, scaffold the new
+  deployment unit reconciler
+
+# Review the task list, then leave
+# Next morning (or whenever) — run it
+export CLAUDE_CODE_TASK_LIST_ID="devops-platform-api-nightshift-20260125"
+claude --headless "Run the night shift. Read NIGHT_SHIFT_MANIFEST.yaml and follow the night-shift skill RUN mode."
+
+# For the audit loop
+claude --dangerously-skip-permissions --headless \
+  "Run night-shift audit loop. Read NIGHT_SHIFT_MANIFEST.yaml, follow night-shift skill AUDIT LOOP mode."
+```
