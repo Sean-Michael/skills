@@ -54,20 +54,22 @@ The philosophy behind this skill is I don't want to bog-down the context of norm
 I also added some specifics on deploying with github pages using github actions. This is well documented online so I didn't feel the need to explicitly call out the implementation steps there.
 
 ### [production-grade](./production-grade/SKILL.md)
-
-This was born out of a necessity to instill some semblence of security best practice when creating web applications. Honestly anything that is exposed to the public internet should be considered 'production' just in some sense so that it's treated with the respect that it deserves to be properly secured. Even if the data behind is is inconsequential, I don't want to leave something to chance like forgetting I stored some personal info or left a backdoor open. 
-
-Claude already has a lot of training data on this topic but I feel that sometimes I have to specifically prompt a bit to explicitly the basics. Obvioulsy the model is optimizing for a quick resolution of a request like 'build me a fastapi application' and not exactly diving deep into rate limiting, auth models, etc. 
-
-So my hope is just by simply invoking this skill and these topics getting placed in the context, all of this will surface and better the app output.
-
-### [obsidian](./obsidian/SKILL.md)
-
-I really like Obisidian as a note taking and personal knowledge organization tool, but I am HORRIBLE at keeping it organized. I start off with good intentions and then slowly it gets derailed.. 
-
-So with this skill the goal is two-fold:
-
-1. Enable claude to use the newly released (at time of writing) Obsidian CLI, I figure just using the `obsidian help` command will be the best way to keep it updated with any changes and it should understand the commands it has access to, their outputs, flags, etc. 
-
-2. Codify my 'ideal' Obsidian practices. I like having a running tally of what I work on, with a combination of Daily Notes with a template which I find very useful for tracking 'to-dos' and other random things, blockers, status, notes for the next day, and then other meeting notes or project related things; gotchas, trade-offs I made, things I meant to remember to change later but forgot.. stuff like that. Self documentation before it's ready to be put up in Confluence etc.
+ 
+This was born out of a necessity to instill some semblance of security best practice when creating web applications. Honestly anything that is exposed to the public internet should be considered 'production' in some sense so that it's treated with the respect it deserves to be properly secured. Even if the data behind it is inconsequential, I don't want to leave something to chance like forgetting I stored some personal info or left a backdoor open.
+ 
+Claude already has a lot of training data on this topic but sometimes I have to specifically prompt it to surface the basics. The model is optimizing for a quick resolution of a request like "build me a fastapi application" and not exactly diving deep into rate limiting, auth models, token storage, etc.
+ 
+The skill encodes the things Claude consistently skips without being told — IDOR ownership checks, httpOnly cookies, middleware-layer rate limiting, single-use hashed reset tokens, structured logging with request IDs. The goal is that invoking the skill is enough: no more explicitly asking for each concern one by one.
+ 
+### [obsidian-cli](./obsidian-cli/SKILL.md)
+ 
+I really like Obsidian as a note taking and personal knowledge organization tool, but I am horrible at keeping it organized. I start off with good intentions and then slowly it gets derailed.
+ 
+This skill is two things:
+ 
+1. **CLI integration** — teaches Claude to use the official Obsidian CLI (shipped in v1.12.4) rather than reading and writing `.md` files directly. Going through the CLI means moves update internal links, creates apply templates, and frontmatter stays valid. The skill defers to `obsidian help` for command discovery so it stays current as the CLI evolves.
+ 
+2. **PKM system** — codifies a PARA-based vault structure (Projects, Areas, Resources, Archive) and conventions for how notes should be created, linked, and maintained over time. The goal is self-documenting work: decisions, tradeoffs, gotchas, and project history captured as things happen rather than reconstructed later.
+ 
+The skill is intentionally vault-agnostic so it can be used anywhere. Vault-specific context (project names, folder paths, daily note template) gets provided at prompt time.
 
