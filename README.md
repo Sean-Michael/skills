@@ -61,7 +61,7 @@ Claude already has a lot of training data on this topic but sometimes I have to 
  
 The skill encodes the things Claude consistently skips without being told — IDOR ownership checks, httpOnly cookies, middleware-layer rate limiting, single-use hashed reset tokens, structured logging with request IDs. The goal is that invoking the skill is enough: no more explicitly asking for each concern one by one.
  
-### [obsidian-cli](./obsidian-cli/SKILL.md)
+### [obsidian](./obsidian/SKILL.md)
  
 I really like Obsidian as a note taking and personal knowledge organization tool, but I am horrible at keeping it organized. I start off with good intentions and then slowly it gets derailed.
  
