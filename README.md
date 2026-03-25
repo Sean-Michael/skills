@@ -54,22 +54,35 @@ The philosophy behind this skill is I don't want to bog-down the context of norm
 I also added some specifics on deploying with github pages using github actions. This is well documented online so I didn't feel the need to explicitly call out the implementation steps there.
 
 ### [production-grade](./production-grade/SKILL.md)
- 
+
 This was born out of a necessity to instill some semblance of security best practice when creating web applications. Honestly anything that is exposed to the public internet should be considered 'production' in some sense so that it's treated with the respect it deserves to be properly secured. Even if the data behind it is inconsequential, I don't want to leave something to chance like forgetting I stored some personal info or left a backdoor open.
- 
+
 Claude already has a lot of training data on this topic but sometimes I have to specifically prompt it to surface the basics. The model is optimizing for a quick resolution of a request like "build me a fastapi application" and not exactly diving deep into rate limiting, auth models, token storage, etc.
- 
-The skill encodes the things Claude consistently skips without being told — IDOR ownership checks, httpOnly cookies, middleware-layer rate limiting, single-use hashed reset tokens, structured logging with request IDs. The goal is that invoking the skill is enough: no more explicitly asking for each concern one by one.
- 
+
+The skill encodes the things Claude consistently skips without being told; IDOR ownership checks, httpOnly cookies, middleware-layer rate limiting, single-use hashed reset tokens, structured logging with request IDs. The goal is that invoking the skill is enough for Claude to pickup the vibe.
+
 ### [obsidian](./obsidian/SKILL.md)
- 
+
 I really like Obsidian as a note taking and personal knowledge organization tool, but I am horrible at keeping it organized. I start off with good intentions and then slowly it gets derailed.
- 
+
 This skill is two things:
- 
+
 1. **CLI integration** — teaches Claude to use the official Obsidian CLI (shipped in v1.12.4) rather than reading and writing `.md` files directly. Going through the CLI means moves update internal links, creates apply templates, and frontmatter stays valid. The skill defers to `obsidian help` for command discovery so it stays current as the CLI evolves.
- 
+
 2. **PKM system** — codifies a PARA-based vault structure (Projects, Areas, Resources, Archive) and conventions for how notes should be created, linked, and maintained over time. The goal is self-documenting work: decisions, tradeoffs, gotchas, and project history captured as things happen rather than reconstructed later.
- 
+
 The skill is intentionally vault-agnostic so it can be used anywhere. Vault-specific context (project names, folder paths, daily note template) gets provided at prompt time.
 
+### [night-shift](./night-shift/SKILL.md)
+
+Have you ever wished that you could sit back at the end of a long day of vibe-coding and, vibe some more? Maybe vibe all night! Into the morning! That's what this skill does. It's inspired by my workflow I've been using lately and in an informal way where I plan and write a detailed spec and then have a roundtable session of claude code to plan, implement, and review.
+
+There are three modes:
+
+- **PLAN** — interactive session where you brainstorm and Claude helps you decompose the work into a properly risk-tagged task list. The key insight here is that "done" has to be objectively verifiable. If you can't write a test or a command that proves the task is complete, it's not ready to run unattended.
+
+- **RUN** — headless execution loop. Agents work through the task list in dependency order, write a scratchpad per task, and produce a digest you can read when you're back. Compaction gates prevent the session from thrashing as context fills up.
+
+- **AUDIT LOOP** — spawns an auditor agent that reads your spec and scores the codebase against it across dimensions like auth, API completeness, test coverage, and production polish. Findings get converted into tasks, an executor implements them, and the loop repeats until the score hits your threshold or something gets too risky and requires a human in the loop.
+
+The risk model allows tasks to be tagged `safe`, `review`, or `risky`, and risky tasks are hard-blocked by default. This operates under the assumption that there's a git repository backing the codebase for tracing and reverts. Anything touching live infrastructure — applying to a cluster, executing terraform — gets flagged as risky and won't run unless you specifically tell it to.

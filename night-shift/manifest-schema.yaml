@@ -1,0 +1,77 @@
+# NIGHT_SHIFT_MANIFEST.yaml Schema
+
+Full schema for the manifest file written during PLAN mode and read during RUN mode.
+Written to repo root, should be added to .gitignore.
+
+```yaml
+# ── Identity ──────────────────────────────────────────────────────────────────
+task_list_id: "my-repo-nightshift-20260125"   # unique per planning session
+created: "2026-01-25T22:30:00-08:00"                  # when plan was created
+repo: "my-repo"                                        # repo name
+planned_by: "sean"                                     # human who planned
+
+# ── Risk Control ──────────────────────────────────────────────────────────────
+risk_unlock: false          # set true to allow 'risky' tasks to run
+review_auto_execute: true   # set false to also skip 'review' tasks
+
+# ── Context Budget ─────────────────────────────────────────────────────────────
+compaction_threshold: 0.75  # RED threshold — stop loop above this
+warning_threshold: 0.60     # YELLOW threshold — warn but continue
+
+# ── Execution Limits ──────────────────────────────────────────────────────────
+max_tasks_per_run: 10       # hard cap on tasks per session (safety)
+max_retries_per_task: 2     # how many times to retry before marking blocked
+stuck_similarity_threshold: 0.85  # scratchpad similarity triggering stuck detection
+
+# ── Output Paths ──────────────────────────────────────────────────────────────
+digest_path: ".claude/NIGHT_SHIFT_DIGEST.md"
+scratchpad_dir: ".claude/scratchpads/"
+manifest_path: "NIGHT_SHIFT_MANIFEST.yaml"   # self-referential, for agents to find
+
+# ── Session Tracking (written during RUN, not set during PLAN) ────────────────
+last_run_started: null      # ISO timestamp, written at RUN start
+last_run_ended: null        # ISO timestamp, written at RUN end
+last_run_context_pct: null  # context % at session close
+completed_this_run: []      # task IDs completed in last RUN session
+```
+
+## Fields Written During RUN
+
+Agents update these fields as the session progresses:
+
+```yaml
+last_run_started: "2026-01-26T07:15:00-08:00"
+last_run_ended: "2026-01-26T09:43:00-08:00"
+last_run_context_pct: "71%"
+completed_this_run:
+  - task-add-cas-endpoint
+  - task-test-coverage-workflows
+  - task-adr-multi-tenancy
+```
+
+## Adding to .gitignore
+
+```gitignore
+# Morning shift planning (local only)
+NIGHT_SHIFT_MANIFEST.yaml
+.claude/scratchpads/
+.claude/NIGHT_SHIFT_DIGEST.md
+```
+
+Or commit them if you want a history of what agents did — useful for the digest
+pipeline / portfolio.
+
+# ── Audit Loop Config ─────────────────────────────────────────────────────────
+audit_loop:
+  spec_path: "SPEC.MD"              # path to spec file relative to repo root
+  score_threshold: 9.5              # stop when overall score >= this
+  max_iterations: 10                # hard cap on audit/implement cycles
+  score_floor: null                 # stop if score drops below this (regression guard)
+  dimensions:                       # scoring dimensions (auditor must score each)
+    - authorization_security
+    - api_completeness
+    - domain_model
+    - testing_coverage
+    - production_polish
+  audit_output_dir: ".claude/audit" # where audit-NNN.md files are written
+  commit_prefix: "[night-shift]"    # git commit message prefix
