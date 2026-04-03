@@ -17,15 +17,21 @@ Before making any changes:
 
 1. **Explore the site fully** via Playwright — navigate every view, interact
    with every control, inspect computed styles, take screenshots. Click through
-   every reachable state.
+   every reachable state. Include empty/zero-data states.
 
-2. **Fix issues immediately** by injecting CSS and JS via Playwright. Take
+2. **Infer the UI personality** from what exists — observe border-radius, font
+   choices, color palette, and copy tone. Classify as elegant (serif, sharp
+   corners, restrained palette), playful (rounded, saturated, casual copy), or
+   neutral (sans-serif, medium radius, professional). Flag inconsistencies —
+   e.g. playful rounded buttons with formal serif headings.
+
+3. **Fix issues immediately** by injecting CSS and JS via Playwright. Take
    before/after screenshots to confirm improvements.
 
-3. **Re-audit after each round** of fixes — new issues surface once earlier
+4. **Re-audit after each round** of fixes — new issues surface once earlier
    ones are resolved. Keep iterating until the design is coherent and polished.
 
-4. **Update the codebase** to make changes permanent. Do not introduce bloat
+5. **Update the codebase** to make changes permanent. Do not introduce bloat
    to the CSS — reuse or refactor what exists.
 
 ---
@@ -47,6 +53,53 @@ Before making any changes:
 - Most important action or information: largest, highest contrast, most prominent.
 - Supporting content should recede — smaller, lighter, lower contrast.
 
+---
+
+## Relationships & Composition
+
+### Button Hierarchy
+
+When multiple actions compete, only **one** gets primary treatment:
+
+| Role        | Style                                         |
+|-------------|-----------------------------------------------|
+| Primary     | Solid fill, brand color, prominent             |
+| Secondary   | Outline or muted fill                          |
+| Tertiary    | Ghost / text-only link style                   |
+| Destructive | Tertiary or secondary — never red primary alongside other primaries |
+
+- If "Delete", "Edit", and "Publish" all look equally bold, the user can't
+  tell what the intended action is. Demote everything except the one thing you
+  want the user to do.
+
+### Label Elimination
+
+- **Format is the label** — `john@example.com` doesn't need an "Email:" prefix.
+  Dates, phone numbers, currency, and URLs are self-evident.
+- **Combine label into value** — instead of "In stock: Yes", say "In stock" as
+  styled text or a badge.
+- **De-emphasize labels** — when labels are necessary, make them smaller, lighter
+  weight, and lower contrast than their values.
+- **Exception**: dense specification/comparison tables benefit from labels for
+  scannability.
+
+### Spacing as Grouping
+
+- Elements that belong together must be **closer** to each other than to
+  unrelated elements — title tight to its body, generous gap before the next
+  section.
+- Ambiguous equidistant spacing makes relationships unclear. Audit title-to-body
+  vs. body-to-next-title distances. Audit icon-to-label gaps vs. label-to-label
+  gaps in lists.
+
+### Border Alternatives
+
+- Prefer **box-shadow**, **background color differences**, and **extra spacing**
+  over `border: 1px solid`. Borders between every element create visual clutter.
+- Borders are fine for inputs and explicit dividers, but a list of cards
+  separated only by gap + shadow reads cleaner than bordered rows.
+
+---
 
 ## Grids, Layout & Spacing
 
@@ -55,13 +108,34 @@ Before making any changes:
 - Consistent alignment — no orphaned elements, no ragged gutters.
 - Related elements tight together, unrelated elements separated generously.
 
+---
 
 ## Typography & Font Sizing
 
 - Consistent type scale — flag arbitrary font sizes not on the scale.
 - Weight and size together signal hierarchy — not one without the other.
-- Body `line-height`: 1.4–1.6× font size.
+- Body `line-height`: 1.4–1.6× font size. Large headings can go tighter (~1.1–1.2).
+- Wide content columns need taller line-height (~1.6–1.8); narrow columns can
+  use shorter (~1.4–1.5).
 - Max 2 typefaces, max 3 weights in active use.
+- **Letter spacing**: tighten large headlines (`letter-spacing: -0.02em` to
+  `-0.05em`). Loosen all-caps text (`letter-spacing: 0.05em`+).
+
+---
+
+## Content Constraints
+
+- **Line length**: paragraphs should be **45–75 characters** wide. Audit with
+  `ch` units or measure rendered text. Applies even when the element shares a
+  row with images or sidebars.
+- **Don't fill the whole screen**: content areas need a `max-width` — just
+  because the nav is full-width doesn't mean the body should be. A checkout
+  page or article at 600–800px centered reads far better than stretched to 1400px.
+- **Think in columns**: when a single column feels too wide on desktop but works
+  on mobile, consider splitting into 2–3 columns rather than just making it wider.
+- **Scale disproportionately**: when adapting components across breakpoints,
+  fine-tune padding, font-size, and icon-size independently — don't scale all
+  properties by the same factor.
 
 ---
 
@@ -132,6 +206,29 @@ Every interactive element must have all required states:
 
 ---
 
+## Empty States
+
+- Every content-dependent view must have an intentional empty state — not just
+  a blank page.
+- Show a prominent CTA ("+ Add contact", "Create your first project") as the
+  main focus.
+- **Hide irrelevant chrome**: tabs, filters, sort controls, and bulk actions
+  should be hidden or disabled when there's zero content. Showing them empty
+  creates confusion.
+- An illustration or icon reinforces the empty state message and prevents the
+  page from feeling broken.
+
+---
+
+## User-Uploaded Content
+
+- Control shape and size: center user images in fixed-dimension containers and
+  crop overflow. Never let aspect ratios break your layout.
+- Prevent background bleed on avatars and thumbnails — when a user uploads an
+  image with a white or light background, it bleeds into your page background.
+
+---
+
 ## Anti-patterns
 
 - Floating controls without a containing group
@@ -142,3 +239,58 @@ Every interactive element must have all required states:
 - Pure black box-shadows
 - Arbitrary font sizes outside the type scale
 - Click targets smaller than 44×44px
+- **Borders everywhere** — lists, cards, and sections separated by `border`
+  instead of shadow, background, or spacing
+- **Content stretching full viewport** — paragraphs or forms at 100% width with
+  no `max-width` constraint
+- **Paragraph lines > 75 characters** — hard to read; constrain with `max-width`
+  in `ch` or `px`
+- **Multiple equally-styled primary buttons** — competing CTAs with no clear
+  hierarchy
+- **Redundant labels** on self-evident data — "Email: user@example.com",
+  "Date: March 5, 2025"
+- **Empty views with no CTA** — blank pages with no guidance on what to do next
+- **User-uploaded images without dimension control** — breaking layout or
+  bleeding into page background
+- **Personality inconsistency** — mixing sharp corners with bubbly fonts, or
+  playful colors with formal copy
+
+---
+
+## CSS Techniques — Non-Obvious Patterns
+
+### Prevent avatar/thumbnail background bleed
+
+```css
+.avatar {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  /* OR */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+```
+
+### Overlap elements for depth (hero → content)
+
+```css
+.search-panel {
+  position: relative;
+  margin-top: -60px; /* pulls up into the hero section */
+}
+```
+
+### Two-shadow combination for realistic depth
+
+```css
+.card {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.12),   /* tight, dark — defines edge */
+    0 8px 24px rgba(0, 0, 0, 0.08);   /* wide, soft — ambient lift */
+}
+```
+
+### Accent border for instant personality
+
+```css
+.card  { border-top: 4px solid var(--color-primary); }
+.alert { border-left: 4px solid var(--color-warning); }
+```
