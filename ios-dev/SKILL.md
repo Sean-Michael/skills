@@ -74,6 +74,64 @@ Register `scheme` in `app.json`. Register redirect URI in Supabase dashboard →
 
 **Storage uploads** — direct URI doesn't work, read via `expo-file-system` as base64 first.
 
+## Targeting a Simulator by Name
+
+```bash
+npx expo run:ios --simulator "iPhone 17 Pro"   # simulator — use --simulator, NOT --device
+# --device targets physical devices and requires code signing
+```
+
+Boot + open:
+```bash
+xcrun simctl boot "iPhone 17 Pro" 2>/dev/null || true && open -a Simulator
+```
+
+## Simulator Interaction
+
+**`xcrun simctl io booted tap` does NOT exist.** Do not attempt it.
+
+Options for driving UI without touch injection:
+
+**1. Debugger-driven navigation (preferred for validation)**
+
+Wire up a `globalThis.__navigateTo` helper in `__DEV__` so the Metro debugger can drive navigation and read/write Zustand state without UI interaction:
+
+```typescript
+// App.tsx or root layout — DEV only
+import { createNavigationContainerRef } from '@react-navigation/native';
+export const navigationRef = createNavigationContainerRef<any>();
+
+if (__DEV__) {
+  (globalThis as any).__navigateTo = (name: string) => {
+    if (navigationRef.isReady()) navigationRef.navigate(name as never);
+  };
+}
+```
+
+Connect from Node.js:
+```javascript
+const WebSocket = require('ws');
+// get device id: GET http://localhost:8081/json
+const ws = new WebSocket('ws://localhost:8081/inspector/debug?device=<id>&page=1');
+ws.on('open', () => {
+  ws.send(JSON.stringify({
+    id: 1, method: 'Runtime.evaluate',
+    params: { expression: '__navigateTo("ProfileScreen")' }
+  }));
+});
+```
+
+Use `Runtime.evaluate` to call `__navigateTo`, read/write Zustand stores, assert UI state.
+
+**2. `xcrun simctl io booted screenshot <path>`** — always works, any process:
+```bash
+xcrun simctl io booted screenshot /tmp/sim.png
+```
+
+**3. Physical mouse clicks on Simulator** — only when Simulator is frontmost app.
+
+**4. `xcrun simctl io booted sendPasteboard` + keyboard shortcut** — for text input.
+
 ## Validation Loop
 
 Run after every feature. Do not declare done until all pass.
@@ -81,41 +139,40 @@ Run after every feature. Do not declare done until all pass.
 ```bash
 npx tsc --noEmit           # must be clean
 npx expo-doctor            # must be clean
-xcrun simctl boot "iPhone 16" 2>/dev/null || true && open -a Simulator
-npx expo run:ios --device "iPhone 16"
+xcrun simctl boot "iPhone 17 Pro" 2>/dev/null || true && open -a Simulator
+npx expo run:ios --simulator "iPhone 17 Pro"
 ```
 
-Then screenshot-drive every screen and feature:
+For each screen: navigate (via debugger or manual click) → screenshot → verify renders → exercise interactive elements → screenshot → verify result. Check empty/loading/error states.
+
 ```bash
-screencapture -x /tmp/sim.png                        # capture
-xcrun simctl io booted tap <x> <y>                   # tap
-xcrun simctl io booted swipe <x1> <y1> <x2> <y2>    # swipe
-xcrun simctl io booted type "text"                   # type
+xcrun simctl io booted screenshot /tmp/sim.png
 ```
-
-For each screen: navigate → screenshot → verify renders → tap every interactive element → screenshot → verify result. Check empty/loading/error states.
 
 Repeat on iPhone SE:
 ```bash
-xcrun simctl boot "iPhone SE (3rd generation)" && npx expo run:ios --device "iPhone SE (3rd generation)"
+xcrun simctl boot "iPhone SE (3rd generation)" 2>/dev/null || true
+npx expo run:ios --simulator "iPhone SE (3rd generation)"
 ```
 
 **Sign-off checklist:**
 - [ ] `tsc --noEmit` clean
 - [ ] `expo-doctor` clean
-- [ ] Launches without crash on iPhone 16 and iPhone SE sims
+- [ ] Launches without crash on iPhone 17 Pro and iPhone SE sims
 - [ ] Every screen renders correctly (screenshot verified)
-- [ ] Every interactive element works (tap + screenshot verified)
+- [ ] Every interactive element works (tap + screenshot verified, or debugger-driven)
 - [ ] No Metro console errors
 - [ ] Auth flow works: sign in, protected route gating, sign out
 - [ ] Data screens load real Supabase data
 
 ## Footguns
 
-- **Native rebuild**: adding native-code library after first `expo run:ios` requires re-running it, not just restarting Metro
+- **Native rebuild**: adding a native-code library requires re-running `expo run:ios`, not just restarting Metro. Same applies to changes to `babel.config.js` — module IDs change at the native boundary. Rule: anything that affects the Metro module graph at the native boundary needs a full rebuild.
+- **`--simulator` vs `--device`**: use `--simulator "iPhone 17 Pro"` to target a sim by name. `--device` targets physical devices and will trigger code signing prompts if one is paired.
 - **Safe area**: root needs `<SafeAreaProvider>`, screens need `<SafeAreaView>` — missing = content under notch
 - **Keyboard**: text input screens need `<KeyboardAvoidingView behavior="padding">`
 - **Expo Go**: some libraries don't work in Expo Go; always use `expo run:ios` dev builds
+- **babel-preset-expo**: use `babel-preset-expo`, not `@react-native/babel-preset` — the latter causes crashes
 
 ## References
 
