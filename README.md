@@ -73,6 +73,17 @@ This skill is two things:
 
 The skill is intentionally vault-agnostic so it can be used anywhere. Vault-specific context (project names, folder paths, daily note template) gets provided at prompt time.
 
+### [ios-dev](./ios-dev/SKILL.md)
+
+Developing applications for iOS was completely new territory for me, having never owned an iOS device until recently. I used claude code heavily to build out an MVP and learned a lot along the way of what methods work to close the feedback loop with the model and the product. I knew that if I was going to run something directly on my phone to test, it had better not crash from a missing library import!
+
+The skill is built around a strict validation loop — TypeScript clean, `expo-doctor` clean, launched without crash on at least two simulator sizes, every screen screenshot-verified. The model isn't allowed to declare done until all of those pass. That single constraint prevents the most common failure mode: Claude writing code that looks fine in the editor but panics at runtime because a native module wasn't re-linked after install.
+
+The other thing that took real trial and error to figure out was how to drive the simulator programmatically. `xcrun simctl io booted tap` does not exist, despite what the model will confidently tell you. The skill encodes the actual options: a `globalThis.__navigateTo` helper wired into the Metro debugger for navigation and state inspection, `xcrun simctl io booted screenshot` for visual verification, and physical mouse clicks as a last resort. This gives the agent a real feedback loop without needing me to pick up my phone for every change.
+
+It also captures a handful of React Native / Expo footguns that Claude consistently stumbles over without being told: Supabase's `SecureStore` adapter and `detectSessionInUrl: false` requirement in RN (the web client config silently breaks auth on mobile), the `--simulator` vs `--device` flag distinction (using the wrong one triggers code signing prompts), and the native rebuild requirement whenever a native-code library is added. The stack is opinionated to move quickly and ship.
+
+
 ### [night-shift](./night-shift/SKILL.md)
 
 Have you ever wished that you could sit back at the end of a long day of vibe-coding and, vibe some more? Maybe vibe all night! Into the morning! That's what this skill does. It's inspired by my workflow I've been using lately and in an informal way where I plan and write a detailed spec and then have a roundtable session of claude code to plan, implement, and review.
