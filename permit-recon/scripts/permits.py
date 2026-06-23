@@ -131,6 +131,11 @@ def fetch_camps(permit_id: str = NOCA_PERMIT_ID) -> list[Camp]:
         lat, lon = d.get("latitude"), d.get("longitude")
         if not lat or not lon:  # zones without a point can't be route-matched
             continue
+        # Skip closed camps so the matcher never recommends one. Closures show up
+        # either in status or, commonly, only in the name ("... (Closed)",
+        # "...-Closed", "Closed due to fire damage").
+        if d.get("status") == "Closed" or "closed" in d.get("name", "").lower():
+            continue
         res_fee = 0.0
         for f in d.get("fees") or []:
             if f.get("description") == "Reservation Fee":
