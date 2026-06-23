@@ -1,0 +1,5 @@
+scripts/.venv/
+scripts/__pycache__/
+scripts/watch_state.json
+scripts/*.json
+.playwright-mcp/
