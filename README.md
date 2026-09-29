@@ -59,6 +59,12 @@ The prose counterpart to python-docs, for READMEs, tutorials, guides, and docs s
 
 It also folds in the Write the Docs principles as one-liners: examples must actually run, headings should work as a skimmable outline, stale docs get deleted, and nothing lives only in an image.
 
+### [schematic-ui](./schematic-ui/SKILL.md)
+
+Where ui-ux is about auditing and fixing, this one is a design *direction*: the Japanese software-engineering aesthetic of Ma (negative space as an active interval), Shibui (understated elegance), and dense, ledger-like information layouts. Think the precision of a PlayStation system menu or a well-drafted schematic rather than a whitespace-heavy SaaS landing page.
+
+It pushes Claude toward explicit text labels over cryptic icons, monochrome-first palettes with a single accent, first-class tables on a rigid grid, and calm, exact motion. It also has a list of things to refuse outright (gradients, glassmorphism, icon-only actions, bouncy animations) plus a self-check to run before handing anything over.
+
 ### [production-grade](./production-grade/SKILL.md)
 
 This was born out of a necessity to instill some semblance of security best practice when creating web applications. Honestly anything that is exposed to the public internet should be considered 'production' in some sense so that it's treated with the respect it deserves to be properly secured. Even if the data behind it is inconsequential, I don't want to leave something to chance like forgetting I stored some personal info or left a backdoor open.
