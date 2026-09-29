@@ -53,6 +53,12 @@ The philosophy behind this skill is I don't want to bog-down the context of norm
 
 I also added some specifics on deploying with github pages using github actions. This is well documented online so I didn't feel the need to explicitly call out the implementation steps there.
 
+### [writing-docs](./writing-docs/SKILL.md)
+
+The prose counterpart to python-docs, for READMEs, tutorials, guides, and docs sites. Claude already knows [Diátaxis](https://diataxis.fr/) well, so the skill doesn't re-teach it. It just nudges Claude to classify each page (tutorial, how-to, reference, explanation) before writing, and to keep those four from blurring into each other. That blurring is the most common way docs go wrong.
+
+It also folds in the Write the Docs principles as one-liners: examples must actually run, headings should work as a skimmable outline, stale docs get deleted, and nothing lives only in an image.
+
 ### [production-grade](./production-grade/SKILL.md)
 
 This was born out of a necessity to instill some semblance of security best practice when creating web applications. Honestly anything that is exposed to the public internet should be considered 'production' in some sense so that it's treated with the respect it deserves to be properly secured. Even if the data behind it is inconsequential, I don't want to leave something to chance like forgetting I stored some personal info or left a backdoor open.
